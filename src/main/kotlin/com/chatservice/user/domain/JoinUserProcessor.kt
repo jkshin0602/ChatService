@@ -1,18 +1,21 @@
 package com.chatservice.user.domain
 
 import com.chatservice.user.entity.UserEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 @Component
 class JoinUserProcessor(
     private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     fun join(request: JoinUserRequest): JoinUserResponse {
-        validate(request)
+        validateRequest(request)
+        require(userRepository.existsByEmail(request.email)) { "Email is already in use" }
 
         val user = UserEntity.create(
             name = request.name,
-            password = request.password,
+            password = passwordEncoder.encode(request.password),
             email = request.email,
         ).apply { userRepository.save(this) }
 
@@ -22,7 +25,7 @@ class JoinUserProcessor(
         )
     }
 
-    private fun validate(request: JoinUserRequest) {
+    private fun validateRequest(request: JoinUserRequest) {
         require(request.name.isNotBlank()) { "Name cannot be blank" }
         require(request.email.isNotBlank()) { "Email cannot be blank" }
         require(request.password.isNotBlank()) { "Password cannot be blank" }
