@@ -6,4 +6,5 @@ interface ChatRepository {
     fun findAllByThreadId(id: Long): List<ChatEntity>
     fun save(chat: ChatEntity): ChatEntity
     fun findAllByThreadIdIn(ids: List<Long>): List<ChatEntity>
+    fun findByIdOrNull(id: Long): ChatEntity?
 }
