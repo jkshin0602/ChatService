@@ -1,10 +1,11 @@
 package com.chatservice.feedback.domain
 
 import com.chatservice.chat.domain.ChatRepository
-import com.chatservice.chat.domain.ThreadRepository
+import com.chatservice.chat.repository.ThreadJpaRepository
 import com.chatservice.common.exception.NotFoundException
 import com.chatservice.feedback.entity.FeedbackEntity
 import com.chatservice.user.domain.UserRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 
 @Component
@@ -12,7 +13,7 @@ class FeedbackCreator(
     private val userRepository: UserRepository,
     private val chatRepository: ChatRepository,
     private val feedbackChecker: FeedbackChecker,
-    private val threadRepository: ThreadRepository,
+    private val threadRepository: ThreadJpaRepository,
     private val feedbackRepository: FeedbackRepository,
 ) {
     fun create(request: CreateFeedback) {

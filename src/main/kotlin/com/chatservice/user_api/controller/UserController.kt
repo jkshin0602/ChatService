@@ -26,7 +26,7 @@ class UserController(
         return ApiResult(data = result)
     }
 
-    @PostMapping
+    @PostMapping("/login")
     fun login(
         @RequestBody request: LoginUserApiRequest,
     ): ApiResult<LoginUserApiResponse> {

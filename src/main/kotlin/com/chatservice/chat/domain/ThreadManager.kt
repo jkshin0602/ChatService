@@ -1,17 +1,19 @@
 package com.chatservice.chat.domain
 
+import com.chatservice.chat.repository.ThreadJpaRepository
 import com.chatservice.chat_api.service.QueryChatApiResponses
 import com.chatservice.common.exception.NotFoundException
 import com.chatservice.user.domain.UserManager
 import com.chatservice.user.entity.UserRole
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 
 @Component
 class ThreadManager(
     private val userManager: UserManager,
     private val chattingFinderMap: Map<UserRole, ChattingFinder>,
-    private val threadRepository: ThreadRepository,
+    private val threadRepository: ThreadJpaRepository,
 ) {
     fun getAllChat(
         userId: Long,
@@ -25,7 +27,7 @@ class ThreadManager(
     fun deleteThread(
         threadId: Long,
         userId: Long,
-    ){
+    ) {
         val user = userManager.getUser(userId) ?: throw NotFoundException("User not found")
         val thread = threadRepository.findByIdOrNull(threadId) ?: throw NotFoundException("Thread not found")
 
