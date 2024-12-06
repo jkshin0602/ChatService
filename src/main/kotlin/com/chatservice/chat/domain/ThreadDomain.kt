@@ -20,11 +20,13 @@ data class ThreadDomain(
                 chats = chats.flatMap {
                     listOf(
                         ChatDomain(
+                            chatId = it.id!!,
                             createDateTime = it.createdDate!!,
                             message = it.question,
                             role = OpenAIRole.USER,
                         ),
                         ChatDomain(
+                            chatId = it.id!!,
                             createDateTime = it.createdDate!!,
                             message = it.answer,
                             role = OpenAIRole.SYSTEM,
@@ -37,6 +39,7 @@ data class ThreadDomain(
 }
 
 data class ChatDomain(
+    val chatId: Long,
     val createDateTime: LocalDateTime,
     val message: String,
     val role: OpenAIRole,
