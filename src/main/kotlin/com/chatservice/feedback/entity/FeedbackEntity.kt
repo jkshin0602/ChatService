@@ -18,8 +18,12 @@ class FeedbackEntity(
     val isPositive: Boolean,
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    val state: FeedbackState,
+    var state: FeedbackState,
 ) : BaseTimeEntity() {
+    fun updateState(state: FeedbackState) {
+        this.state = state
+    }
+
     companion object {
         fun create(
             userId: Long,

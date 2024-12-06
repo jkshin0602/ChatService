@@ -20,6 +20,10 @@ class UserEntity(
     @Column(name = "role", nullable = false)
     var role: UserRole,
 ) : BaseTimeEntity() {
+    fun isAdmin(): Boolean {
+        return role == UserRole.ADMIN
+    }
+
     companion object {
         fun create(
             name: String,
