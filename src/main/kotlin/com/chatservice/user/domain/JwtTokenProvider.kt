@@ -1,6 +1,9 @@
 package com.chatservice.user.domain
 
+import com.chatservice.user.entity.UserEntity
+import com.chatservice.user.entity.UserRole
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
@@ -20,13 +23,18 @@ class JwtTokenProvider(
 ) {
     private val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
 
-    fun createToken(email: String, role: String): String {
+    fun createToken(
+        userId: Long,
+        email: String,
+        role: String,
+    ): String {
         val now = Date()
         val validity = Date(now.time + expirationMinutes * 60 * 1000)
 
         return Jwts.builder()
             .subject(email)
             .claim("role", role)
+            .claim("id", userId)
             .issuedAt(now)
             .expiration(validity)
             .signWith(key)
@@ -49,10 +57,34 @@ class JwtTokenProvider(
         val claims = getClaims(token)
         val authorities = listOf(SimpleGrantedAuthority("ROLE_${claims.payload["role"]}"))
 
-        return UsernamePasswordAuthenticationToken(claims.payload.subject, "", authorities)
+        val user = getUserInfoFromToken(token)
+
+        val authDetail = CustomUserDetails(
+            userEntity = UserEntity(
+                name = user.email,
+                password = "",
+                email = user.email,
+                role = user.role,
+            )
+        )
+
+        return UsernamePasswordAuthenticationToken(
+            authDetail,
+            "",
+            authorities,
+        )
     }
 
-    private fun getClaims(token: String): io.jsonwebtoken.Jws<Claims> {
+    private fun getUserInfoFromToken(token: String): AuthenticatedUser {
+        val claims = getClaims(token)
+        return AuthenticatedUser(
+            id = claims.payload["id"] as Long,
+            email = claims.payload.subject,
+            role = UserRole.valueOf(claims.payload["role"].toString()),
+        )
+    }
+
+    private fun getClaims(token: String): Jws<Claims> {
         return Jwts.parser()
             .verifyWith(key)
             .build()

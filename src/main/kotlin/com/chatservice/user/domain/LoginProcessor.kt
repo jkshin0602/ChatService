@@ -19,7 +19,11 @@ class LoginProcessor(
             "Invalid password"
         }
 
-        val token = jwtTokenProvider.createToken(user.email, user.role.name)
+        val token = jwtTokenProvider.createToken(
+            userId = user.id!!,
+            email = user.email,
+            role = user.role.name,
+        )
         return Token(token)
     }
 
