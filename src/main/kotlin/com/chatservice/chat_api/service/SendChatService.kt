@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @Service
-class ChatService(
+class SendChatService(
     private val chatManager: ChatManager,
 ) {
     fun sendMessage(
