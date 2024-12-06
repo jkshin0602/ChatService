@@ -2,6 +2,7 @@ package com.chatservice.chat.domain
 
 import com.chatservice.chat.entity.ChatEntity
 import com.chatservice.chat.entity.ThreadEntity
+import com.chatservice.user.domain.UserManager
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -10,8 +11,11 @@ class ChatManager(
     private val threadRepository: ThreadRepository,
     private val chatRepository: ChatRepository,
     private val openApiManager: OpenApiManager,
+    private val userManager: UserManager,
 ) {
     fun sendMessage(request: ChatRequest): ChatResponse {
+        validate(request)
+
         val thread = getOrCreateThread(request.userId)
         val chats = chatRepository.findAllByThreadId(thread.id!!)
 
@@ -62,6 +66,11 @@ class ChatManager(
 
     private fun createNewThread(userId: Long): ThreadEntity {
         return ThreadEntity.create(userId).also { threadRepository.save(it) }
+    }
+
+    private fun validate(request: ChatRequest) {
+        require(userManager.existUser(request.userId)) { "Nonexistent user" }
+        require(request.question.isNotBlank()) { "question must not be blank" }
     }
 }
 

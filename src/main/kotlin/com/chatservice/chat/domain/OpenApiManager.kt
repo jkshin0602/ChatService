@@ -41,4 +41,10 @@ enum class OpenAIModel(
 ){
     GPT_3_5_TURBO("gpt-3.5-turbo"),
     ;
+
+    companion object {
+        fun getByDescription(description: String): OpenAIModel {
+            return entries.firstOrNull{it.description == description} ?: GPT_3_5_TURBO
+        }
+    }
 }
